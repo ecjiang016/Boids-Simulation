@@ -73,8 +73,10 @@ class Boid {
         */
         this.turn = 0
         var boids_found = 0
-        var average_difference_x = 0
-        var average_difference_y = 0
+        var average_diff_x = 0
+        var average_diff_y = 0
+        var average_diff_velo_x = 0
+        var average_diff_velo_y = 0
         boids.forEach(boid => {
             var x_dist = (this.x - boid.x) / window.innerWidth * 100
             var y_dist = (this.y - boid.y) / window.innerHeight * 100
@@ -84,18 +86,23 @@ class Boid {
                 boids_found += 1
 
                 //Avoid other boids
-                average_difference_x += this.x - boid.x
-                average_difference_y += this.y - boid.y
+                average_diff_x += this.x - boid.x
+                average_diff_y += this.y - boid.y
 
                 //Match direction of other boids
-                //console.log(this.angle - boid.angle)
-                //align_turn += (this.angle - boid.angle) * 0.01
+                //Equivalent to matching velocity vectors
+                average_diff_velo_x += this.velo_x - boid.velo_x
+                average_diff_velo_y += this.velo_y - boid.velo_y
             }
         });
         
+        //Average and scale everything
         if (boids_found != 0) {
-            this.velo_x += average_difference_x / boids_found * 15000
-            this.velo_y += average_difference_y / boids_found * 15000
+            this.velo_x += average_diff_x / boids_found * 15000
+            this.velo_y += average_diff_y / boids_found * 15000
+
+            this.velo_x += average_diff_velo_x / boids_found * 0.5
+            this.velo_y += average_diff_velo_y / boids_found * 0.5
         }
 
         //Update
@@ -103,9 +110,9 @@ class Boid {
         var normalize = Math.sqrt(Math.pow(this.velo_x, 2) + Math.pow(this.velo_y, 2))
         var velo = normalize/10000000
 
-        // Max and min velocity
-        this.velo_x /= velo * 2
-        this.velo_y /= velo * 2
+        //Rescale velocity vector
+        this.velo_x /= velo * 4
+        this.velo_y /= velo * 4
 
         normalize = Math.sqrt(Math.pow(this.velo_x, 2) + Math.pow(this.velo_y, 2))
         velo = normalize/10000000
@@ -240,8 +247,8 @@ class TestBoid {
         var velo = normalize/10000000
 
         // Max and min velocity
-        this.velo_x /= velo * 2
-        this.velo_y /= velo * 2
+        this.velo_x /= velo * 4
+        this.velo_y /= velo * 4
 
         normalize = Math.sqrt(Math.pow(this.velo_x, 2) + Math.pow(this.velo_y, 2))
         velo = normalize/10000000
@@ -270,11 +277,11 @@ class TestBoid {
 }
 
 const boids = []
-for (let i = 0; i < 20; i++) {
+for (let i = 0; i < 40; i++) {
     boids[i] = new Boid(document.getElementById("boid" + i))
 }
 
-boids[25] = new TestBoid(document.getElementById("boid25"))
+boids[40] = new TestBoid(document.getElementById("boid25"))
 
 let lastTime
 function update(time) {
