@@ -43,7 +43,7 @@ class Boid {
     }
 
     reset() {
-        this.x = Math.random() * 100 * (window.innerHeight / window.innerWidth) + (50 * (window.innerHeight / window.innerWidth))
+        this.x = Math.random() * 100
         this.y = Math.random() * 100
         this.velo_x = Math.random() - 0.5
         this.velo_y = Math.random() - 0.5
@@ -77,6 +77,8 @@ class Boid {
         var average_diff_y = 0
         var average_diff_velo_x = 0
         var average_diff_velo_y = 0
+        var average_x = 0
+        var average_y = 0
         boids.forEach(boid => {
             var x_dist = (this.x - boid.x) / window.innerWidth * 100
             var y_dist = (this.y - boid.y) / window.innerHeight * 100
@@ -93,16 +95,23 @@ class Boid {
                 //Equivalent to matching velocity vectors
                 average_diff_velo_x += this.velo_x - boid.velo_x
                 average_diff_velo_y += this.velo_y - boid.velo_y
+
+                //Go towards center of flock
+                average_x -= boid.x
+                average_y -= boid.y
             }
         });
         
         //Average and scale everything
         if (boids_found != 0) {
-            this.velo_x += average_diff_x / boids_found * 15000
-            this.velo_y += average_diff_y / boids_found * 15000
+            this.velo_x += average_diff_x / boids_found * 1000
+            this.velo_y += average_diff_y / boids_found * 1000
 
-            this.velo_x += average_diff_velo_x / boids_found * 0.5
-            this.velo_y += average_diff_velo_y / boids_found * 0.5
+            this.velo_x += average_diff_velo_x / boids_found * 0.9
+            this.velo_y += average_diff_velo_y / boids_found * 0.9
+
+            this.velo_x += average_x / boids_found * 1000
+            this.velo_y += average_y / boids_found * 1000
         }
 
         //Update
@@ -140,7 +149,7 @@ class Boid {
     }
 }
 
-class TestBoid {
+class SpecialBoid {
     constructor(boidElem) {
         this.boidElem = boidElem
         this.reset()
@@ -185,8 +194,8 @@ class TestBoid {
     }
 
     reset() {
-        this.x = Math.random() * 100 * (window.innerHeight / window.innerWidth) + (50 * (window.innerHeight / window.innerWidth))
-        this.y = Math.random() * 100
+        this.x = 50
+        this.y = 50
         this.velo_x = Math.random() - 0.5
         this.velo_y = Math.random() - 0.5
         this.angle = Math.atan(this.velo_y/this.velo_x)
@@ -222,16 +231,12 @@ class TestBoid {
             var y_dist = (this.y - boid.y) / window.innerHeight * 100
 
             if ((x_dist != 0 && y_dist != 0)
-            && ((Math.pow(x_dist, 2) + Math.pow(y_dist, 2)) < 4)) {
+            && ((Math.pow(x_dist, 2) + Math.pow(y_dist, 2)) < 3)) {
                 boids_found += 1
 
                 //Avoid other boids
                 average_difference_x += this.x - boid.x
                 average_difference_y += this.y - boid.y
-
-                //Match direction of other boids
-                //console.log(this.angle - boid.angle)
-                //align_turn += (this.angle - boid.angle) * 0.01
             }
         });
         
@@ -241,14 +246,18 @@ class TestBoid {
             this.velo_y += average_difference_y / boids_found * 15000
         }
 
+        //Favor the center
+        this.velo_x += (50 - this.x) * 6500
+        this.velo_y += (50 - this.y) * 6500
+
         //Update
 
         var normalize = Math.sqrt(Math.pow(this.velo_x, 2) + Math.pow(this.velo_y, 2))
         var velo = normalize/10000000
 
         // Max and min velocity
-        this.velo_x /= velo * 4
-        this.velo_y /= velo * 4
+        this.velo_x /= velo * 5
+        this.velo_y /= velo * 5
 
         normalize = Math.sqrt(Math.pow(this.velo_x, 2) + Math.pow(this.velo_y, 2))
         velo = normalize/10000000
@@ -281,7 +290,7 @@ for (let i = 0; i < 40; i++) {
     boids[i] = new Boid(document.getElementById("boid" + i))
 }
 
-boids[40] = new TestBoid(document.getElementById("boid25"))
+boids[40] = new SpecialBoid(document.getElementById("boid25"))
 
 let lastTime
 function update(time) {
