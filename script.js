@@ -285,8 +285,11 @@ class SpecialBoid {
     }
 }
 
+var window_size = window.innerWidth * window.innerHeight
+var boid_num = Math.min(Math.floor(window_size * 20 / 1032480), 40)
+
 const boids = []
-for (let i = 0; i < 40; i++) {
+for (let i = 0; i < boid_num; i++) {
     boids[i] = new Boid(document.getElementById("boid" + i))
 }
 
