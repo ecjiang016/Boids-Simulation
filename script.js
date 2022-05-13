@@ -61,7 +61,7 @@ class Boid {
         this.boidElem.style.color = "rgb("+r+","+g+","+b+")"
     }
 
-    update(delta, boids, sep, align, coh, range) {
+    update(delta, boids, sep, align, coh, range, avoid_edges) {
         var boids_found = 0
         var average_diff_x = 0
         var average_diff_y = 0
@@ -107,6 +107,31 @@ class Boid {
         this.velo_x += (average_diff_x + average_diff_velo_x + average_x_diff) / 1000
         this.velo_y += (average_diff_y + average_diff_velo_y + average_y_diff) / 1000
 
+        //Avoiding edges
+        if (avoid_edges == true) {
+            if (this.x < 20) {
+                this.velo_x += 0.06
+            }
+            else if (this.x > 80) {
+                this.velo_x -= 0.06
+            }
+            if (this.y < 20 * y_scale) {
+                this.velo_y += 0.06
+            }
+            else if (this.y > 80 * y_scale) {
+                this.velo_y -= 0.06
+            }
+        } else {
+            //Wrap around screen
+            if ((this.x <= -5) || (this.x >= 105)) {
+                this.x = (this.x % 105 + 105) % 105
+            }
+
+            if ((this.y <= -y_scale * 5) || (this.y >= y_scale * 105)) {
+                this.y = (this.y % 105 + 105) % 105
+            }
+        }
+
         //Turning randomly
         this.velo_x += (Math.random() - 0.5) / 10
         this.velo_y += (Math.random() - 0.5) / 10
@@ -127,15 +152,6 @@ class Boid {
             this.angle = Math.PI + Math.atan(this.velo_y/this.velo_x)
         }
 
-        //Wrap around screen
-        if ((this.x <= -5) || (this.x >= 105)) {
-            this.x = (this.x % 105 + 105) % 105
-        }
-
-        if ((this.y <= -y_scale * 5) || (this.y >= y_scale * 105)) {
-            this.y = (this.y % 105 + 105) % 105
-        }
-
     }
 }
 
@@ -152,6 +168,7 @@ var sep
 var align
 var coh
 var range
+var avoid_edges
 var new_boid_num = boid_num
 
 let lastTime
@@ -163,6 +180,7 @@ function update(time) {
         align = document.getElementById("Alignment").value
         coh = document.getElementById("Cohesion").value
         range = document.getElementById("Range").value
+        avoid_edges = document.getElementById("AvoidEdge").checked
 
         new_boid_num = document.getElementById("BoidsNum").value
         if (new_boid_num != boid_num) {
@@ -179,7 +197,7 @@ function update(time) {
         }
 
         boids.forEach(boid => {
-            boid.update(delta, boids, sep, align, coh, range)
+            boid.update(delta, boids, sep, align, coh, range, avoid_edges)
         });
     }
 
