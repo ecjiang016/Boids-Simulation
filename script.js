@@ -121,6 +121,21 @@ class Boid {
             else if (this.y > 80 * y_scale) {
                 this.velo_y -= 0.06
             }
+
+            //Avoid having the boids go too far out of screen
+            if (this.x <= -20) {
+                this.x = -20
+            }
+            else if (this.x >= 120) {
+                this.x = 120
+            }
+            if (this.y <= -20) {
+                this.y = -20
+            }
+            else if (this.y >= 120) {
+                this.y = 120
+            }
+
         } else {
             //Wrap around screen
             if ((this.x <= -5) || (this.x >= 105)) {
