@@ -62,7 +62,6 @@ class Boid {
     }
 
     update(delta, boids) {
-        this.turn = 0
         var boids_found = 0
         var average_diff_x = 0
         var average_diff_y = 0
@@ -73,6 +72,7 @@ class Boid {
         var average_x_diff = 0
         var average_y_diff = 0
         var norm
+        var y_scale = window.innerHeight / window.innerWidth
 
         boids.forEach(boid => {
             var x_dist = (this.x - boid.x)
@@ -128,11 +128,12 @@ class Boid {
         }
 
         //Wrap around screen
-        if ((this.x <= -2.5) || (this.x >= 102.5)) {
+        if ((this.x <= -5) || (this.x >= 105)) {
             this.x = (this.x % 105 + 105) % 105
         }
 
-        if ((this.y <= -2.5) || (this.y >= 102.5)) {
+        console.log(y_scale)
+        if ((this.y <= -y_scale * 5) || (this.y >= y_scale * 105)) {
             this.y = (this.y % 105 + 105) % 105
         }
 
