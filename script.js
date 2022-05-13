@@ -61,7 +61,7 @@ class Boid {
         this.boidElem.style.color = "rgb("+r+","+g+","+b+")"
     }
 
-    update(delta, boids) {
+    update(delta, boids, sep, align, coh) {
         var boids_found = 0
         var average_diff_x = 0
         var average_diff_y = 0
@@ -82,13 +82,13 @@ class Boid {
             && ((Math.pow(x_dist, 2) + Math.pow(y_dist, 2)) < 70)) {
 
                 //Avoid other boids
-                average_diff_x += x_dist * 5
-                average_diff_y += y_dist * 5
+                average_diff_x += x_dist * sep
+                average_diff_y += y_dist * sep
 
                 //Match direction of other boids
                 //Equivalent to matching velocity vectors
-                average_diff_velo_x += (boid.velo_x - this.velo_x) * 8
-                average_diff_velo_y += (boid.velo_y - this.velo_y) * 8
+                average_diff_velo_x += (boid.velo_x - this.velo_x) * align
+                average_diff_velo_y += (boid.velo_y - this.velo_y) * align
 
                 //Go towards center of flock
                 boids_found += 1
@@ -99,8 +99,8 @@ class Boid {
 
         //Average the averages
         if (boids_found != 0) {
-            average_x_diff = ((average_x/boids_found) - this.x) * 15
-            average_y_diff = ((average_y/boids_found) - this.y) * 15
+            average_x_diff = ((average_x/boids_found) - this.x) * coh
+            average_y_diff = ((average_y/boids_found) - this.y) * coh
         }
 
         //Update
@@ -132,7 +132,6 @@ class Boid {
             this.x = (this.x % 105 + 105) % 105
         }
 
-        console.log(y_scale)
         if ((this.y <= -y_scale * 5) || (this.y >= y_scale * 105)) {
             this.y = (this.y % 105 + 105) % 105
         }
@@ -154,7 +153,11 @@ function update(time) {
         const delta = time - lastTime
         //updates
         boids.forEach(boid => {
-            boid.update(delta, boids)
+            boid.update(delta, boids,
+                document.getElementById("Seperation").value,
+                document.getElementById("Alignment").value,
+                document.getElementById("Cohesion").value
+                )
         });
     }
 
