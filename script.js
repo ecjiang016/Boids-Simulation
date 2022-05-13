@@ -61,7 +61,7 @@ class Boid {
         this.boidElem.style.color = "rgb("+r+","+g+","+b+")"
     }
 
-    update(delta, boids, sep, align, coh) {
+    update(delta, boids, sep, align, coh, range) {
         var boids_found = 0
         var average_diff_x = 0
         var average_diff_y = 0
@@ -79,7 +79,7 @@ class Boid {
             var y_dist = (this.y - boid.y)
 
             if ((x_dist != 0 && y_dist != 0)
-            && ((Math.pow(x_dist, 2) + Math.pow(y_dist, 2)) < 70)) {
+            && ((Math.pow(x_dist, 2) + Math.pow(y_dist, 2)) < Math.pow(range, 2))) {
 
                 //Avoid other boids
                 average_diff_x += x_dist * sep
@@ -147,17 +147,39 @@ for (let i = 0; i < boid_num; i++) {
     boids[i] = new Boid(document.getElementById("boid" + i))
 }
 
+//Slider controlled values
+var sep
+var align
+var coh
+var range
+var new_boid_num = boid_num
+
 let lastTime
 function update(time) {
     if (lastTime != null) {
         const delta = time - lastTime
-        //updates
+        //Updates
+        sep = document.getElementById("Seperation").value
+        align = document.getElementById("Alignment").value
+        coh = document.getElementById("Cohesion").value
+        range = document.getElementById("Range").value
+
+        new_boid_num = document.getElementById("BoidsNum").value
+        if (new_boid_num != boid_num) {
+            boid_num = new_boid_num
+            document.getElementById("TotalBoids").innerHTML = "Total Boids: " + boid_num
+
+            while (boids.length > boid_num) {
+                boids[boids.length-1].boidElem.style.color = "rgba(51, 51, 51, 0)"
+                boids.pop()
+            }
+            while (boids.length < boid_num) {
+                boids[boids.length] = new Boid(document.getElementById("boid" + boids.length))
+            }
+        }
+
         boids.forEach(boid => {
-            boid.update(delta, boids,
-                document.getElementById("Seperation").value,
-                document.getElementById("Alignment").value,
-                document.getElementById("Cohesion").value
-                )
+            boid.update(delta, boids, sep, align, coh, range)
         });
     }
 
