@@ -166,7 +166,6 @@ class Boid {
         else {
             this.angle = Math.PI + Math.atan(this.velo_y/this.velo_x)
         }
-
     }
 }
 
@@ -183,6 +182,7 @@ var sep
 var align
 var coh
 var range
+var speed
 var avoid_edges
 var new_boid_num = boid_num
 
@@ -197,6 +197,7 @@ function update(time) {
         align = document.getElementById("Alignment").value
         coh = document.getElementById("Cohesion").value
         range = document.getElementById("Range").value
+        speed = document.getElementById("Speed").value
         avoid_edges = document.getElementById("AvoidEdge").checked
 
         new_boid_num = document.getElementById("BoidsNum").value
@@ -215,6 +216,7 @@ function update(time) {
 
         boids.forEach(boid => {
             boid.update(delta, boids, sep, align, coh, range, avoid_edges)
+            boid.speed = speed / 10000
         });
     }
 
