@@ -171,6 +171,8 @@ var range
 var avoid_edges
 var new_boid_num = boid_num
 
+avoid_edges = document.getElementById("AvoidEdge").checked = true
+
 let lastTime
 function update(time) {
     if (lastTime != null) {
